@@ -1,14 +1,14 @@
 
 # General Information
 
-This is a basic VS Code sample project for the DSP course at H-KA in Karlsruhe, Germany.  
+This is the VS Code **_echo cancellation_** project for the DSP course at H-KA in Karlsruhe, Germany.  
 The source code in "system/" and "ldscripts/" is provided by Prof. Dr.-Ing. Christian Langen.  
-This sample project is for Windows only. 
+This project is for Windows only. 
 Find all documentation under "docs/". Most downloads should be available under "downloads/". All [download links](#download-links) are listed below.
 
 
 
-# Prerequisites for this sample project
+# Prerequisites for this project
 
 1. GCC
     - recommended release: 13.3 rel1
@@ -28,7 +28,7 @@ Find all documentation under "docs/". Most downloads should be available under "
 
 # Usage of the project
 
-- launch "hello_world.code-workspace"
+- launch "echocancellation.code-workspace"
 - all required extensions should load automatically
 - use "IF_DEBUG(debug_printf())" to send messages to the Serial Port Monitor
     - with "IF_DEBUG()", debug_printf() is automatically disabled in Release build
@@ -124,7 +124,7 @@ Refer to the file "downloads/FM4_FilterLab_1_3_Template/Eclipse_Application_Note
 
 # Download-Links
 
-check the "downloads/" folder of this sample project before downloading
+check the "downloads/" folder of this project before downloading
 
 GCC toolchain:  
 https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
