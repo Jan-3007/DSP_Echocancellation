@@ -7,7 +7,7 @@
     - Bsp. .wav files
     - Echo mit Python erzeugen (parameter: delay, dämpfung)
 
-Nachfolgend (2 Pers. gemeinsam)
+Nachfolgend (2 Pers. gemeinsam)  
 3. Testrahmen für PC    
     - Konsoleapp
     - test
