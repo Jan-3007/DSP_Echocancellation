@@ -3,7 +3,7 @@
 ## To Do Liste
 
 1. Algorithmus theoretisch entwerfen    (2 Pers.)  
-wird bearbeitet von: 
+wird bearbeitet von: Eric
     - Blockschaltbild
     - in Python testen
 
