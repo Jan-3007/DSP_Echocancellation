@@ -2,18 +2,18 @@
 
 ## To Do Liste
 
-1. Algorithmus theoretisch entwerfen    (2 Pers.)  
-wird bearbeitet von: Eric
+Punkt 1 und 2 (3 Pers.)  
+wird bearbeitet von: Eric, Maileen  
+1. Algorithmus theoretisch entwerfen  
     - Blockschaltbild
     - in Python testen
 
-3. Testdaten erstellen  (1 Pers.)  
-wird bearbeitet von: 
+2. Testdaten erstellen
     - Bsp. .wav files
     - Echo mit Python erzeugen (parameter: delay, dämpfung)
 
 
-Nachfolgend (2 Pers. gemeinsam)  
+Punkt 3 und 4 (2 Pers. gemeinsam)  
 wird bearbeitet von: Jan
 
 3. Testrahmen für PC    
