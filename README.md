@@ -1,26 +1,35 @@
 # Projekt "echo cancellation"
 
-## To Do Liste
 
-Punkt 1 und 2 (3 Pers.)  
-wird bearbeitet von: Eric, Maileen  
-1. Algorithmus theoretisch entwerfen  
-    - Blockschaltbild
+### Aufgabenbereich 1: Mathematik und Testdatenerzeugung
+
+1. Algorithmus mathematisch entwerfen
+    - Blockschaltbild, ...
     - in Python testen
-
-2. Testdaten erstellen
+2. Testdaten erstellen oder herunterladen
     - Bsp. .wav files
-    - Echo mit Python erzeugen (parameter: delay, dämpfung)
+    - Option 1: files mit Echo aus dem Internet herunterladen
+    - Option 2: Audio files herunterladen/erzeugen und per Audioprogramm oder mit Python ein Echo darüber legen (Parameter: Verzögerung, Dämpfung)
 
 
-Punkt 3 und 4 (2 Pers. gemeinsam)  
-wird bearbeitet von: Jan
 
-3. Testrahmen für PC    
-    - Konsoleapp
-    - test
+### Aufgabenbereich 2: Implementierung des Algorithmus
 
-4. Implementierung auf dem Board 
-    - Grundgerüst
-    - integration des Algorithmus
-    - test
+1. Algorithmus in einem Konsoleprogramm für PC implementieren
+    - bereits die CMSIS-DSP Bib. wenn möglich verwenden
+    - Test über Python mit den .wav files aus Aufgabenbereich 1 
+        - wenn das echo erst mit Python erzeugt wurde, ist es möglich das originale file mit dem verarbeiteten file zu vergleichen
+2. Algorithmus auf dem Board implementieren
+    - möglichst den Code aus 1. übernehmen
+    - notwendige zusätzliche Hardware des Boards in Betrieb nehmen
+
+
+
+### Präsentation
+
+1. Vortrag
+    - kurze Übersicht zu den einzelnen Arbeitsschritten
+2. Vorführung des Programms auf dem Board
+    - benötigt: Kabel, Lautsprecher, Mikrofon(?)
+    - Audio mit Echo wird beispielsweise von dem Pythonprogramm in Echtzeit erzeugt
+
