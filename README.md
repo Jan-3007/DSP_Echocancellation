@@ -3,6 +3,7 @@
 
 ### Aufgabenbereich 1: Mathematik und Testdatenerzeugung
 
+Berabeiter: Maileen, Eric, Marvin
 1. Algorithmus mathematisch entwerfen
     - Blockschaltbild, ...
     - in Python testen
@@ -15,6 +16,7 @@
 
 ### Aufgabenbereich 2: Implementierung des Algorithmus
 
+Bearbeiter: Jan, Rouven
 1. Algorithmus in einem Konsoleprogramm für PC implementieren
     - bereits die CMSIS-DSP Bib. wenn möglich verwenden
     - Test über Python mit den .wav files aus Aufgabenbereich 1 
