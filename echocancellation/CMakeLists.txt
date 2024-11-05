@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.20)
 
 
 include(toolchain_arm-none-eabi-gcc-13.3.Rel1.cmake)
@@ -35,11 +35,9 @@ list(APPEND include_directories "${CMAKE_CURRENT_LIST_DIR}/system/include/platfo
 list(APPEND include_directories "${CMAKE_CURRENT_LIST_DIR}/system/include/S6E2CCA/PDL")
 
 
-
 # build CMSIS-DSP library
 add_subdirectory("${CMSISDSP}/Source" lib_dsp)
 target_compile_definitions(CMSISDSP PRIVATE ${compile_definitions} )
-
 
 
 #
@@ -64,12 +62,13 @@ add_custom_command(TARGET ${target_name} POST_BUILD
     VERBATIM
     )
 
+
 # add libs to link with
 target_link_libraries(${target_name} 
     CMSISDSP
     )
 
-
+    
 # add startup code to the project
 target_sources(${target_name} PRIVATE
     system/include/S6E2CCA/startup/startup_s6e2cc.S
