@@ -1,7 +1,7 @@
 
 # General Information
 
-This is a basic VS Code sample project for the DSP course at H-KA in Karlsruhe, Germany.  
+This is the VS Code **_echo cancellation_** project for the DSP course at H-KA in Karlsruhe, Germany.  
 The source code in "system/" and "ldscripts/" is provided by Prof. Dr.-Ing. Christian Langen.  
 This sample project is for __Windows__, but Linux is supported as well.  
 Find all documentation under "docs/". Some downloads are available under "downloads/". All [download links](#download-links) are listed below.
