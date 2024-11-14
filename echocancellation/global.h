@@ -1,5 +1,6 @@
 #pragma once
 
+
 // C++
 #include <stdio.h>
 
@@ -18,6 +19,9 @@ extern "C"
 
 // custom
 #include "debug_utils.h"
+#include "aec_utils.h"
+#include "aec_config.h"
+#include "LMS_filter.h"
 
 
 
