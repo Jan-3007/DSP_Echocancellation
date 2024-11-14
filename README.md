@@ -6,9 +6,12 @@
 Berabeiter: Maileen, Eric, Marvin
 1. Algorithmus mathematisch entwerfen
     - Blockschaltbild, ...
-    - in Python testen
-2. Testdaten erstellen oder herunterladen
+2. Algorithmus in Python testen
+    - Test des LMS Filters (LMS Algorithmus + FIR Filter)
+    - Test um einen CFAR erweitern (+ Wahrscheinlichkeitsdichtefunktion & Co)
+3. Testdaten erstellen oder herunterladen
     - Bsp. .wav files
+    - zum nachbilden des realen Szenarios
     - Option 1: files mit Echo aus dem Internet herunterladen
     - Option 2: Audio files herunterladen/erzeugen und per Audioprogramm oder mit Python ein Echo darüber legen (Parameter: Verzögerung, Dämpfung)
 
@@ -17,13 +20,15 @@ Berabeiter: Maileen, Eric, Marvin
 ### Aufgabenbereich 2: Implementierung des Algorithmus
 
 Bearbeiter: Jan, Rouven
-1. Algorithmus in einem Konsoleprogramm für PC implementieren
+1. (vorerst nicht umsetzen)Algorithmus in einem Konsoleprogramm für PC implementieren
     - bereits die CMSIS-DSP Bib. wenn möglich verwenden
     - Test über Python mit den .wav files aus Aufgabenbereich 1 
         - wenn das echo erst mit Python erzeugt wurde, ist es möglich das originale file mit dem verarbeiteten file zu vergleichen
 2. Algorithmus auf dem Board implementieren
-    - möglichst den Code aus 1. übernehmen
-    - notwendige zusätzliche Hardware des Boards in Betrieb nehmen
+    - DAC in Betrieb nehmen
+    - circular buffer implementieren
+    - CFAR implementieren
+    - LMS Filter implementieren (v1 fertig)
 
 
 
