@@ -88,6 +88,7 @@ target_sources(${target_name} PRIVATE
     crt_dummy_syscalls.c
     echocancellation.cpp
     debug_utils.cpp
+    CircularBuffer.cpp
     LMS_filter.cpp
     )
 

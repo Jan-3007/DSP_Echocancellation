@@ -12,6 +12,15 @@
 constexpr uint16_t c_block_size = 8;
 
 
+//------------------------------
+//
+// circular buffer
+//
+//------------------------------
+
+// number of blocks the buffer can hold
+constexpr uint16_t c_num_blocks = 3;
+
 
 //------------------------------
 //

@@ -12,6 +12,10 @@ int main()
 
     //CodecInit(hz48000, line_in);
 
+
+    // AEC specific
+    CircularBuffer circ_buffer;
+
     LMS_filter lms;
     lms.init();
 

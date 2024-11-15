@@ -21,6 +21,7 @@ extern "C"
 #include "debug_utils.h"
 #include "aec_utils.h"
 #include "aec_config.h"
+#include "CircularBuffer.h"
 #include "LMS_filter.h"
 
 
