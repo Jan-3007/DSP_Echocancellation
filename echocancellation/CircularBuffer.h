@@ -15,6 +15,9 @@ public:
     CircularBuffer();
 
     aec_status
+    init();
+
+    aec_status
     write_sample(const float32_t& sample);
 
     aec_status

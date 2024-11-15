@@ -12,7 +12,10 @@ LMSFilter::init()
 {
     // clear the state buffer
 //    memset(data, 0, (c_num_taps + (c_block_size - 1)) * sizeof(float32_t));
-    memset( data, 0, sizeof(data) );
+    for(auto i : data)
+    {
+        i = 0;
+    }
 
     return SUCCESS;
 }

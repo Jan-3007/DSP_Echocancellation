@@ -7,6 +7,20 @@ CircularBuffer::CircularBuffer()
 }
 
 
+aec_status 
+CircularBuffer::init()
+{
+    // clear the state buffer
+//    memset(data, 0, (c_num_taps + (c_block_size - 1)) * sizeof(float32_t));
+    for(auto i : buffer)
+    {
+        i = 0;
+    }
+
+    return SUCCESS;
+}
+
+
 aec_status
 CircularBuffer::write_sample(const float32_t& sample)
 {
