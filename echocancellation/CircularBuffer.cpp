@@ -1,5 +1,4 @@
 #include "global.h"
-#include "CircularBuffer.h"
 
 
 // ctor

@@ -2,7 +2,7 @@
 
 
 
-class LMS_filter
+class LMSFilter
 {
 protected:
 
@@ -13,6 +13,9 @@ protected:
 
 
 public:
+    // ctor
+    LMSFilter();
+
     aec_status
     init();
 

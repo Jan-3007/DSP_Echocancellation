@@ -16,7 +16,7 @@ int main()
     // AEC specific
     CircularBuffer circ_buffer;
 
-    LMS_filter lms;
+    LMSFilter lms;
     lms.init();
 
 

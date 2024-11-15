@@ -1,9 +1,14 @@
 #include "global.h"
 
 
+// ctor
+LMSFilter::LMSFilter()
+{
+}
+
 
 aec_status
-LMS_filter::init()
+LMSFilter::init()
 {
     // clear the state buffer
 //    memset(data, 0, (c_num_taps + (c_block_size - 1)) * sizeof(float32_t));
@@ -14,7 +19,7 @@ LMS_filter::init()
 
 
 aec_status 
-LMS_filter::process(
+LMSFilter::process(
     const float32_t* source,        // points to the block of input data
     const float32_t* reference,     // points to the block of reference data
     float32_t* output,              // points to the block of output data
@@ -78,7 +83,7 @@ LMS_filter::process(
 
 
 aec_status 
-LMS_filter::prepare_next_process()
+LMSFilter::prepare_next_process()
 {
     // init pointer
     float32_t* current_data = data;

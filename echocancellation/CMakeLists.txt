@@ -89,7 +89,7 @@ target_sources(${target_name} PRIVATE
     echocancellation.cpp
     debug_utils.cpp
     CircularBuffer.cpp
-    LMS_filter.cpp
+    LMSFilter.cpp
     )
 
 
