@@ -7,99 +7,85 @@ LMSFilter::LMSFilter()
 }
 
 
-aec_status
+void
 LMSFilter::init()
 {
     // clear the state buffer
-//    memset(data, 0, (c_num_taps + (c_block_size - 1)) * sizeof(float32_t));
-    for(auto i : data)
-    {
-        i = 0;
-    }
+    memset(data_, 0, sizeof(data_));
 
-    return SUCCESS;
+    // clear the coeffs buffer
+    memset(coeffs_, 0, sizeof(coeffs_));
 }
 
 
-aec_status 
+void
 LMSFilter::process(
     const float32_t* source,        // points to the block of input data
     const float32_t* reference,     // points to the block of reference data
+#if LMS_FILTER_WITH_OUTPUT
     float32_t* output,              // points to the block of output data
-    float32_t* error                // points to the block of error data
+#endif
+    float32_t* error                // points to the block of error data        // TODO: necessary???
     )
 {
-    // init pointer
-    float32_t* current_data = data;
-    float32_t* new_data = &data[c_num_taps - 1];
-    float32_t* coeff_ptr = coeffs;
+    float32_t* data_ptr = data_;
+    float32_t* new_data = &data_[c_num_taps - 1];
 
     // TODO: add sizes of arrays to params and compare them against config values?
 
     // process data and append samples from source to data    
-    for(uint16_t sample_cnt = c_block_size; sample_cnt > 0; sample_cnt--)
+    for(uint32_t sample_cnt = c_block_size; sample_cnt > 0; sample_cnt--)
     {
         // copy new sample into the data buffer, included here to avoid another loop
         *new_data++ = *source++;
 
 
         // FIR-filter: apply coefficients to data
-        float32_t acc = 0;
-        for(uint16_t tap_cnt = c_num_taps; tap_cnt > 0; tap_cnt--)
+        float32_t* current_data = data_ptr;
+        float32_t* coeff_ptr = coeffs_;
+        float32_t acc = 0.0f;
+        for(uint32_t tap_cnt = c_num_taps; tap_cnt > 0; tap_cnt--)
         {
-            // utilize DSP funcionality of the Cortex-M4
             // multiply-accumulate
             acc += (*current_data++) * (*coeff_ptr++);
         }
+#if LMS_FILTER_WITH_OUTPUT
         // store result in output
         *output++ = acc;
-
+#endif
 
         // compute error
         float32_t e = *reference++ - acc;
         *error++ = e;
 
 
-        // compute weight
+        // compute weight for updating filter coeffs
         float32_t weight = e * c_mu;
 
 
         // reset data and coefficients pointer
-        current_data = data;
-        coeff_ptr = coeffs;
+        current_data = data_ptr++;
+        coeff_ptr = coeffs_;
 
 
         // apply weight to coefficients
-        for(uint16_t tap_cnt = c_num_taps; tap_cnt > 0; tap_cnt--)
+        for(uint32_t tap_cnt = c_num_taps; tap_cnt > 0; tap_cnt--)
         {
-            // utilize DSP funcionality of the Cortex-M4
-            // multiply-accumulate
-            *coeff_ptr += weight * (*current_data++);           // TODO: What is () for?
-            coeff_ptr++;
+            (*coeff_ptr++) += (weight * (*current_data++));          
         }
     }
 
-    prepare_next_process();
-
-    return SUCCESS;
-}
-
-
-aec_status 
-LMSFilter::prepare_next_process()
-{
-    // init pointer
-    float32_t* current_data = data;
-    float32_t* new_data = &data[c_num_taps - 1];
+    // processing is complete
+    // prepare state buffer for the next process call
 
     // copy appended data to front of data
-    // alternative: implement a circular buffer                 // TODO: better performance?
-    for(uint16_t tap_cnt = c_num_taps; tap_cnt > 0; tap_cnt--)
+    float32_t* current_data = data_;
+    for(uint32_t tap_cnt = c_num_taps - 1; tap_cnt > 0; tap_cnt--)
     {
-        *current_data++ = *new_data++;
+        *current_data++ = *data_ptr++;
     }
-
-    return SUCCESS;
 }
+
+
 
 
