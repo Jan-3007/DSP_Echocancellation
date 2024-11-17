@@ -22,6 +22,7 @@ extern "C"
 #include "aec_utils.h"
 #include "aec_config.h"
 #include "CircularBuffer.h"
+#include "CFAR.h"
 #include "LMSFilter.h"
 
 

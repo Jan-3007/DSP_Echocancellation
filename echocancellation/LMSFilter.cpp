@@ -4,6 +4,7 @@
 // ctor
 LMSFilter::LMSFilter()
 {
+    init();
 }
 
 
@@ -25,7 +26,7 @@ LMSFilter::process(
 #if LMS_FILTER_WITH_OUTPUT
     float32_t* output,              // points to the block of output data
 #endif
-    float32_t* error                // points to the block of error data        // TODO: necessary???
+    float32_t* error                // points to the block of error data        
     )
 {
     float32_t* data_ptr = data_;

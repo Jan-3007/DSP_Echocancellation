@@ -13,11 +13,18 @@ int main()
     //CodecInit(hz48000, line_in);
 
 
-    // AEC specific
-    CircularBuffer circ_buffer;
+    // circular buffer
+    float32_t buffer[c_num_blocks * c_block_size];
+    CircularBuffer circ_buffer(c_block_size, buffer);
+
+
+
+
 
     LMSFilter lms;
-    lms.init();
+
+
+
 
 
     int i = 0;

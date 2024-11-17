@@ -1,77 +1,222 @@
 #include "global.h"
+#include "CircularBuffer.h"
 
 
-// ctor
-CircularBuffer::CircularBuffer()
+
+void 
+CircularBuffer::reset()
 {
+    read_ptr_ = write_ptr_ = buffer_start_;
+    buffer_full_ = false;
 }
 
 
-aec_status 
-CircularBuffer::init()
+bool
+CircularBuffer::write_sample(float32_t sample)
 {
-    // clear the state buffer
-//    memset(data, 0, (c_num_taps + (c_block_size - 1)) * sizeof(float32_t));
-    for(auto i : buffer)
+    if(buffer_full_)
     {
-        i = 0;
-    }
-
-    return SUCCESS;
-}
-
-
-aec_status
-CircularBuffer::write_sample(const float32_t& sample)
-{
-    if( (write_ptr++) == read_ptr)
-    {
-        // buffer full
-        IF_DEBUG(debug_printf("circ. buffer full\n"));
-        return BUFFER_ERROR;
+        return false;
     }
 
     // copy sample into buffer
-    *write_ptr = sample;                            // TODO: track number of copied samples -> if == block size -> interrupt/flag to run Filter
+    *write_ptr_++ = sample;                            
 
-    // move write pointer forward
-    ( (write_ptr++) == (buffer + 1) ) ? (write_ptr = buffer) : (write_ptr++);              // TODO: pointer arithmetic, move buffer ptr forward by size of buffer
-    
-    return SUCCESS;
+    // check if end of buffer is reached
+    if(write_ptr_ == buffer_limit_)
+    {
+        write_ptr_ = buffer_start_;
+    }
+
+    if(write_ptr_ == read_ptr_)
+    {
+        // buffer full
+        buffer_full_ = true;
+    }
+
+    return true;
 }
 
 
-aec_status 
-CircularBuffer::read_block(float32_t sample_block[c_block_size])
+bool
+CircularBuffer::read_sample(float32_t& sample)
 {
-    float32_t* temp_ptr = sample_block;
-
-    // copy data from buffer to sample_block
-    for(uint16_t n = 0; n < c_block_size; n++)
+    if(is_empty())
     {
-        // check if buffer is empty
-        if(empty())
-        {
-            // buffer empty
-            IF_DEBUG(debug_printf("circ. buffer empty\n"));
-            return BUFFER_ERROR;
-        }
-
-        // copy sample
-        *temp_ptr++ = *read_ptr;
-
-        // move read pointer forward
-        ( (read_ptr++) == (buffer + 1) ) ? (read_ptr = buffer) : (read_ptr++);              // TODO: pointer arithmetic, move buffer ptr forward by size of buffer
+        // buffer empty
+        return false;
     }
 
-    return aec_status();
+    // copy sample
+    sample = *read_ptr_++;
+
+    // check if end of buffer is reached
+    if(read_ptr_ == buffer_limit_)
+    {
+        read_ptr_ = buffer_start_;
+    }
+
+    buffer_full_ = false;
+
+    return true;
 }
 
 
 bool 
-CircularBuffer::empty()
+CircularBuffer::read_block(float32_t output[])
 {
-    ptrdiff_t diff = write_ptr - read_ptr;
+    // check if buffer has at least one block
+    if(num_blocks_readable() == 0)
+    {
+        return false;
+    }
 
-    return (diff <= c_block_size && diff >= (-c_block_size));
+    // copy data from buffer to sample_block
+    for(size_t n = block_size_; n > 0; n--)
+    {
+        // copy sample
+        *output++ = *read_ptr_++;
+
+        // check if end of buffer is reached
+        if(read_ptr_ == buffer_limit_)
+        {
+            read_ptr_ = buffer_start_;
+        }
+    }
+
+    buffer_full_ = false;
+
+    return true;
+}
+
+
+bool 
+CircularBuffer::write_block(const float32_t input[])
+{
+    // check if buffer has at least one writeable block
+    if(num_blocks_writeable() == 0)
+    {
+        return false;
+    }
+
+    // copy data from sample_block to buffer
+    for(size_t n = block_size_; n > 0; n--)
+    {
+        // copy sample
+        *write_ptr_++ = *input++;
+
+        // check if end of buffer is reached
+        if(write_ptr_ == buffer_limit_)
+        {
+            write_ptr_ = buffer_start_;
+        }
+    }
+
+    if(write_ptr_ == read_ptr_)
+    {
+        // buffer full
+        buffer_full_ = true;
+    }
+
+    return true;
+}
+
+
+bool
+CircularBuffer::discard_block()
+{
+    // check if buffer has at least one block
+    if(num_blocks_readable() > 0)
+    {
+        for(size_t n = block_size_; n > 0; n--)
+        {
+            read_ptr_++;
+            
+            // check if end of buffer is reached
+            if(read_ptr_ == buffer_limit_)
+            {
+                read_ptr_ = buffer_start_;
+            }
+        }
+
+        buffer_full_ = false;
+
+        return true;
+    }
+
+    return false;
+}
+
+
+bool 
+CircularBuffer::discard_sample()
+{
+    // check if buffer has at least one sample
+    if(!is_empty())
+    {
+        read_ptr_++;
+        
+        // check if end of buffer is reached
+        if(read_ptr_ == buffer_limit_)
+        {
+            read_ptr_ = buffer_start_;
+        }
+
+        buffer_full_ = false;
+        
+        return true;
+    }
+
+    return false;
+}
+
+
+size_t 
+CircularBuffer::num_blocks_readable()
+{
+    return ( num_samples_readable() / block_size_ );
+}
+
+
+size_t CircularBuffer::num_blocks_writeable()
+{
+    return ( num_samples_writeable() / block_size_ );
+}
+
+
+size_t 
+CircularBuffer::num_samples_readable()
+{
+    if(buffer_full_)
+    {
+        return get_buffer_size();
+    }
+
+    if(write_ptr_ >= read_ptr_)
+    {
+        return (write_ptr_ - read_ptr_);
+    }
+    else
+    {
+        return ( get_buffer_size() - (read_ptr_ - write_ptr_) );
+    }
+}
+
+
+size_t 
+CircularBuffer::num_samples_writeable()
+{
+    if(buffer_full_)
+    {
+        return 0;
+    }
+
+    if(write_ptr_ >= read_ptr_)
+    {
+        return ( get_buffer_size() - (write_ptr_ - read_ptr_) );
+    }
+    else
+    {
+        return (read_ptr_ - write_ptr_);
+    }
 }
