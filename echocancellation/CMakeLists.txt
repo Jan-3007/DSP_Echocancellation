@@ -36,8 +36,8 @@ list(APPEND include_directories "${CMAKE_CURRENT_LIST_DIR}/system/include/S6E2CC
 
 
 # build CMSIS-DSP library
-add_subdirectory("${CMSISDSP}/Source" lib_dsp)
-target_compile_definitions(CMSISDSP PRIVATE ${compile_definitions} )
+#add_subdirectory("${CMSISDSP}/Source" lib_dsp)
+#target_compile_definitions(CMSISDSP PRIVATE ${compile_definitions} )
 
 
 #
@@ -64,9 +64,9 @@ add_custom_command(TARGET ${target_name} POST_BUILD
 
 
 # add libs to link with
-target_link_libraries(${target_name} 
-    CMSISDSP
-    )
+#target_link_libraries(${target_name} 
+#    CMSISDSP
+#    )
 
     
 # add startup code to the project
@@ -87,10 +87,10 @@ target_sources(${target_name} PRIVATE
 target_sources(${target_name} PRIVATE
     crt_dummy_syscalls.c
     echocancellation.cpp
-    debug_utils.cpp
-    CircularBuffer.cpp
 #    CFAR.cpp
+    CodecWM8731.cpp
     LMSFilter.cpp
+    I2S_DSTC.cpp
     )
 
 

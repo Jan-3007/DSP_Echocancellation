@@ -2,6 +2,20 @@
 #include <cstdarg>
 
 
+
+
+void
+fatal_error()
+{
+    // LED_R on
+	gpio_set(LED_R, LOW);		
+
+    while(true);
+}
+
+
+
+
 // write_uart0: transmits a string to UART0 transmit buffer
 void write_uart0(const char* message)
 {

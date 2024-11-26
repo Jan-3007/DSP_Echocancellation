@@ -1,6 +1,18 @@
 #pragma once
 
 
+
+void
+fatal_error();
+
+#ifdef DEBUG
+#define ASSERT(cond)    if(!(cond)) fatal_error()
+#else
+#define ASSERT(cond)
+#endif
+
+
+
 void write_uart0(const char* message);
 
 // use for printing over UART0
@@ -13,4 +25,5 @@ void debug_printf(const char* fmt, ...);
 #else
 #define IF_DEBUG(x)
 #endif
+
 

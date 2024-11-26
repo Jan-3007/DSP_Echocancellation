@@ -10,3 +10,9 @@ enum aec_status
     BUFFER_ERROR            = -4,        // Error while writing to or reading from buffer
 };
 
+
+
+
+
+
+

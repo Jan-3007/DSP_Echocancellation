@@ -19,11 +19,17 @@ extern "C"
 
 // custom
 #include "debug_utils.h"
-#include "aec_utils.h"
 #include "aec_config.h"
+#include "aec_utils.h"
 #include "CircularBuffer.h"
 #include "CFAR.h"
 #include "LMSFilter.h"
+#include "CodecWM8731.h"
+#include "I2S_DSTC.h"
+#include "AEC.h"
+
+
+
 
 
 
