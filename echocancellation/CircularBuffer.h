@@ -64,6 +64,22 @@ public:
             underrun_error_ = 0;
         }
 
+    uint32_t
+    capture_overrun_error()
+        {
+            uint32_t tmp = overrun_error_;
+            overrun_error_ = 0;
+            return tmp;
+        }
+
+    uint32_t
+    capture_underrun_error()
+        {
+            uint32_t tmp = underrun_error_;
+            underrun_error_ = 0;
+            return tmp;
+        }
+
 
     // returns false if buffer is full
     bool
@@ -203,6 +219,12 @@ public:
     void
     incr_read_block_ptr()
         {
+            if(is_empty())
+            {
+                underrun_error_++;
+                return;
+            }
+
             read_ptr_ += block_size_;
             // check if end of buffer is reached
             if(read_ptr_ == buffer_limit_)
@@ -233,6 +255,12 @@ public:
     void
     incr_write_block_ptr()
         {
+            if(is_full())
+            {
+                overrun_error_++;
+                return;
+            }
+
             write_ptr_ += block_size_;
             // check if end of buffer is reached
             if(write_ptr_ == buffer_limit_)
@@ -297,7 +325,34 @@ public:
         }
 
     bool
-    fill_block(T value);
+    fill_block(T value)
+        {
+            // check if buffer has at least one writeable block
+            if(num_blocks_writeable() == 0)
+            {
+                overrun_error_++;
+                return false;
+            }
+
+            for(size_t n = block_size_; n > 0; n--)
+            {
+                *write_ptr_++ = value;
+
+                // check if end of buffer is reached
+                if(write_ptr_ == buffer_limit_)
+                {
+                    write_ptr_ = buffer_start_;
+                }
+            }
+
+            if(write_ptr_ == read_ptr_)
+            {
+                // buffer full
+                buffer_full_ = true;
+            }
+
+            return true;
+        }
 
 
     size_t

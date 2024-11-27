@@ -1,4 +1,5 @@
 #include "global.h"
+#include "AEC.h"
 
 
 
@@ -15,26 +16,37 @@ AEC::init()
 void
 AEC::run()
 {
-    // LED_G on
-	gpio_set(LED_G, LOW);		
+    update_led();
 
+    constexpr uint32_t loop_divider = 1000;
+    uint32_t cnt = loop_divider;
+
+    // main loop
     while(true)
     {
-        update_aec_flag();
-
-
+#if 1
+        loopback();
+#else
 
         if(aec_active_)
         {
-//            arm_q31_to_float();
-//            arm_float_to_q31();
+            process_aec();
         }
-        
+        else
+        {
+            mic_passthrough();
+        }
+#endif
 
+        cnt--;
+        if(cnt == 0)
+        {
+            cnt = loop_divider;
+            update_aec_flag();
+
+            check_errors();
+        }
     }
-
-
-
 }
 
 
@@ -46,13 +58,175 @@ AEC::update_aec_flag()
         if(aec_active_)
         {
             aec_active_ = false;
+            update_led();
         }
         else
         {
             aec_active_ = true;
+            update_led();
         }
     }
 }
 
+
+void 
+AEC::update_led()
+{
+    if(aec_active_)
+    {
+        // LED_R off
+        gpio_set(LED_R, HIGH);
+        // LED_G off
+        gpio_set(LED_G, HIGH);
+        // LED_B on
+        gpio_set(LED_B, LOW);
+    }
+    else
+    {
+        // LED_R off
+        gpio_set(LED_R, HIGH);
+        // LED_B off
+        gpio_set(LED_B, HIGH);
+        // LED_G on
+        gpio_set(LED_G, LOW);
+    }
+}
+
+
+void 
+AEC::process_aec()
+{
+    // try to read input
+    if(g_i2s_dstc.read_rx_block(input_block_) == false)
+    {
+        return;
+    }
+    
+    convert_input();
+
+    // process input
+    lms_.process(
+        right_input_block_,                     // original signal
+        left_input_block_,                      // microphone
+        float_output_block_                     // output
+        );
+
+    convert_output();
+
+    // write output
+    g_i2s_dstc.write_tx_block(output_block_);
+}
+
+
+void 
+AEC::loopback()
+{
+    if(g_i2s_dstc.read_rx_block(input_block_) == false)
+    {
+        return;
+    }
+    
+    // reading block was successful
+
+    // copy input to output
+    uint32_t* input = input_block_;
+    uint32_t* output = output_block_;
+    for(uint32_t i = c_block_size; i > 0; i--)
+    {
+        *output++ = *input++;
+    }
+
+    g_i2s_dstc.write_tx_block(output_block_);
+}
+
+
+void 
+AEC::mic_passthrough()
+{
+    if(g_i2s_dstc.read_rx_block(input_block_) == false)
+    {
+        return;
+    }
+    
+    convert_input();
+
+    // output = input L + input R
+    for(uint32_t i = 0; i < c_block_size; i++)
+    {
+        float_output_block_[i] = left_input_block_[i];
+    }
+
+    convert_output();
+
+    g_i2s_dstc.write_tx_block(output_block_);
+}
+
+
+void 
+AEC::convert_input()
+{
+    // split channels and convert to float
+    const uint32_t* input = input_block_;
+    for(uint32_t i = 0; i < c_block_size; i++)
+    {
+        uint32_t tmp = *input++;
+        // right = LSB
+        // left = MSB
+        int16_t right = static_cast<int16_t>(tmp);
+        int16_t left = static_cast<int16_t>(tmp >> 16);
+
+        float32_t right_f = static_cast<float32_t>(right) / 32768.0f;
+        float32_t left_f = static_cast<float32_t>(left) / 32768.0f;
+
+        right_input_block_[i] = right_f;
+        left_input_block_[i] = left_f;
+    }
+}
+
+
+void 
+AEC::convert_output()
+{
+    // convert to int and combine channels
+    uint32_t* output = output_block_;
+    for(uint32_t i = 0; i < c_block_size; i++)
+    {
+        float32_t smp_f = float_output_block_[i];
+
+        int16_t smp_i = static_cast<int16_t>( __SSAT( static_cast<int32_t>(smp_f * 32768.0f), 16) );
+
+        uint32_t smp_u = static_cast<uint16_t>(smp_i);
+
+        // duplicate signal on right and left channels
+        uint32_t tmp = (smp_u << 16) | smp_u;
+        *output++ = tmp;
+    }
+}
+
+
+void 
+AEC::check_errors()
+{
+    I2S_DSTC::Errors errors;
+
+    g_i2s_dstc.capture_errors(errors);
+
+    if(errors.tx_buffer_overrun > 0)
+    {
+        IF_DEBUG(debug_printf("tx_buffer_overrun = %u", errors.tx_buffer_overrun));
+    }
+    if(errors.tx_buffer_underrun > 0)
+    {
+        IF_DEBUG(debug_printf("tx_buffer_underrun = %u", errors.tx_buffer_underrun));
+    }
+    if(errors.rx_buffer_overrun > 0)
+    {
+        IF_DEBUG(debug_printf("rx_buffer_overrun = %u", errors.rx_buffer_overrun));
+    }
+    if(errors.rx_buffer_underrun > 0)
+    {
+        IF_DEBUG(debug_printf("rx_buffer_underrun = %u", errors.rx_buffer_underrun));
+    }
+}
 
 

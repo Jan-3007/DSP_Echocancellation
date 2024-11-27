@@ -1,4 +1,5 @@
 #include "global.h"
+#include "I2S_DSTC.h"
 
 
 
@@ -54,8 +55,8 @@ void I2S_DSTC::init_dstc()
 	tx_desc_.DES0.PCHK  	= DSTC_PCHK_CALC(tx_desc_.u32DES0);	// parity
 
 	// CH0, DES1, counters can be set to 1 - 256, and multiples of 256
-	tx_desc_.DES1_mode1.ORM = ((c_dstc_buffer_size -1) >> 8) + 1;			// outer loop count
-	tx_desc_.DES1_mode1.IIN = (tx_desc_.DES1_mode1.ORM > 1) ? 0 : c_dstc_buffer_size & 0XFF;  // Inner loop, max 256; 256 = 0
+	tx_desc_.DES1_mode1.ORM = ((c_block_size -1) >> 8) + 1;			// outer loop count
+	tx_desc_.DES1_mode1.IIN = (tx_desc_.DES1_mode1.ORM > 1) ? 0 : c_block_size & 0XFF;  // Inner loop, max 256; 256 = 0
 	tx_desc_.DES1_mode1.IRM = tx_desc_.DES1_mode1.IIN;			// Same as IIN
 
 	// CH0, DES2
@@ -94,8 +95,8 @@ void I2S_DSTC::init_dstc()
 	rx_desc_.DES0.PCHK  = DSTC_PCHK_CALC(rx_desc_.u32DES0);
 
 	// CH1, DES1, counters can be set to 1 - 256, and multiples of 256
-	rx_desc_.DES1_mode1.ORM = ((c_dstc_buffer_size -1) >> 8) + 1;		// outer loop count
-	rx_desc_.DES1_mode1.IIN = (rx_desc_.DES1_mode1.ORM > 1) ? 0 : c_dstc_buffer_size & 0XFF;  // Inner loop, max 256; 256 = 0
+	rx_desc_.DES1_mode1.ORM = ((c_block_size -1) >> 8) + 1;		// outer loop count
+	rx_desc_.DES1_mode1.IIN = (rx_desc_.DES1_mode1.ORM > 1) ? 0 : c_block_size & 0XFF;  // Inner loop, max 256; 256 = 0
 	rx_desc_.DES1_mode1.IRM = rx_desc_.DES1_mode1.IIN;   		// Same as IIN
 
 	// CH1, DES2
@@ -220,5 +221,50 @@ void
 I2S_DSTC::isr_rx_static()
 {
     g_i2s_dstc.isr_rx();
+}
+
+
+bool 
+I2S_DSTC::write_tx_block(const uint32_t input[])
+{
+    // lock out ISR
+    NVIC_DisableIRQ(DSTC_HW_IRQn);
+
+    bool succ = tx_buffer_.write_block(input);
+
+    // unlock ISR
+    NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+    return succ;
+}
+
+
+bool 
+I2S_DSTC::read_rx_block(uint32_t output[])
+{
+    // lock out ISR
+    NVIC_DisableIRQ(DSTC_HW_IRQn);
+
+    bool succ = rx_buffer_.read_block(output);
+
+    // unlock ISR
+    NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+    return succ;
+}
+
+void 
+I2S_DSTC::capture_errors(Errors& errors)
+{
+    // lock out ISR
+    NVIC_DisableIRQ(DSTC_HW_IRQn);
+
+    errors.rx_buffer_overrun = rx_buffer_.capture_overrun_error();
+    errors.rx_buffer_underrun = rx_buffer_.capture_underrun_error();
+    errors.tx_buffer_overrun = tx_buffer_.capture_overrun_error();
+    errors.tx_buffer_underrun = tx_buffer_.capture_underrun_error();
+
+    // unlock ISR
+    NVIC_EnableIRQ(DSTC_HW_IRQn);
 }
 
