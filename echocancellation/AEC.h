@@ -13,6 +13,7 @@ protected:
 
     // flag for de-/activating the AEC
     bool aec_active_ {false};
+    bool button_pressed {false};
 
     uint32_t input_block_[c_block_size];
     float32_t right_input_block_[c_block_size];

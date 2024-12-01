@@ -7,9 +7,9 @@
 void
 AEC::init()
 {
-    g_codec.init();
+    g_codec->init();
 
-    g_i2s_dstc.init();
+    g_i2s_dstc->init();
 }
 
 
@@ -18,13 +18,20 @@ AEC::run()
 {
     update_led();
 
-    constexpr uint32_t loop_divider = 1000;
-    uint32_t cnt = loop_divider;
+
+    constexpr uint32_t button_divider = 1000;
+    uint32_t btn_cnt = button_divider;
+
+    constexpr uint32_t monitor_divider = 10*1000*1000;
+    uint32_t monitor_cnt = monitor_divider;
+    
+    // start I2S and DSTC
+    g_i2s_dstc->start();
 
     // main loop
     while(true)
     {
-#if 1
+#if 0
         loopback();
 #else
 
@@ -38,12 +45,15 @@ AEC::run()
         }
 #endif
 
-        cnt--;
-        if(cnt == 0)
+        if(0 == --btn_cnt)
         {
-            cnt = loop_divider;
+            btn_cnt = button_divider;
             update_aec_flag();
+        }
 
+        if(0 == --monitor_cnt)
+        {
+            monitor_cnt = monitor_divider;
             check_errors();
         }
     }
@@ -53,17 +63,32 @@ AEC::run()
 void 
 AEC::update_aec_flag()
 {
-    if( USER_BUTTON == 0)
+    if(button_pressed)
     {
-        if(aec_active_)
+        if(gpio_get(USER_BUTTON) != 0)
         {
-            aec_active_ = false;
-            update_led();
+            button_pressed = false;
         }
-        else
+    }
+    else
+    {
+        if(gpio_get(USER_BUTTON) == 0)
         {
-            aec_active_ = true;
-            update_led();
+            button_pressed = true;
+
+            if(aec_active_)
+            {
+                aec_active_ = false;
+                update_led();
+                IF_DEBUG(debug_printf("AEC off\n"));
+
+            }
+            else
+            {
+                aec_active_ = true;
+                update_led();
+                IF_DEBUG(debug_printf("AEC on\n"));
+            }
         }
     }
 }
@@ -97,7 +122,7 @@ void
 AEC::process_aec()
 {
     // try to read input
-    if(g_i2s_dstc.read_rx_block(input_block_) == false)
+    if(g_i2s_dstc->read_rx_block(input_block_) == false)
     {
         return;
     }
@@ -114,14 +139,14 @@ AEC::process_aec()
     convert_output();
 
     // write output
-    g_i2s_dstc.write_tx_block(output_block_);
+    g_i2s_dstc->write_tx_block(output_block_);
 }
 
 
 void 
 AEC::loopback()
 {
-    if(g_i2s_dstc.read_rx_block(input_block_) == false)
+    if(g_i2s_dstc->read_rx_block(input_block_) == false)
     {
         return;
     }
@@ -136,21 +161,21 @@ AEC::loopback()
         *output++ = *input++;
     }
 
-    g_i2s_dstc.write_tx_block(output_block_);
+    g_i2s_dstc->write_tx_block(output_block_);
 }
 
 
 void 
 AEC::mic_passthrough()
 {
-    if(g_i2s_dstc.read_rx_block(input_block_) == false)
+    if(g_i2s_dstc->read_rx_block(input_block_) == false)
     {
         return;
     }
     
     convert_input();
 
-    // output = input L + input R
+    // output = input L
     for(uint32_t i = 0; i < c_block_size; i++)
     {
         float_output_block_[i] = left_input_block_[i];
@@ -158,7 +183,7 @@ AEC::mic_passthrough()
 
     convert_output();
 
-    g_i2s_dstc.write_tx_block(output_block_);
+    g_i2s_dstc->write_tx_block(output_block_);
 }
 
 
@@ -209,24 +234,27 @@ AEC::check_errors()
 {
     I2S_DSTC::Errors errors;
 
-    g_i2s_dstc.capture_errors(errors);
+    g_i2s_dstc->capture_errors(errors);
 
     if(errors.tx_buffer_overrun > 0)
     {
-        IF_DEBUG(debug_printf("tx_buffer_overrun = %u", errors.tx_buffer_overrun));
+        IF_DEBUG(debug_printf("tx_buffer_overrun = %u\n", errors.tx_buffer_overrun));
     }
     if(errors.tx_buffer_underrun > 0)
     {
-        IF_DEBUG(debug_printf("tx_buffer_underrun = %u", errors.tx_buffer_underrun));
+        IF_DEBUG(debug_printf("tx_buffer_underrun = %u\n", errors.tx_buffer_underrun));
     }
     if(errors.rx_buffer_overrun > 0)
     {
-        IF_DEBUG(debug_printf("rx_buffer_overrun = %u", errors.rx_buffer_overrun));
+        IF_DEBUG(debug_printf("rx_buffer_overrun = %u\n", errors.rx_buffer_overrun));
     }
+// rx underrun is not an error
+#if 0
     if(errors.rx_buffer_underrun > 0)
     {
-        IF_DEBUG(debug_printf("rx_buffer_underrun = %u", errors.rx_buffer_underrun));
+        IF_DEBUG(debug_printf("rx_buffer_underrun = %u\n", errors.rx_buffer_underrun));
     }
+#endif
 }
 
 

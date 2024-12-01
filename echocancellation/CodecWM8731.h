@@ -13,6 +13,10 @@ public:
     // ctor
     CodecWM8731();
 
+    static
+    void
+    create_instance();
+
     void
     init();
 
@@ -23,4 +27,4 @@ protected:
 
 
 
-extern CodecWM8731 g_codec;
+extern CodecWM8731* g_codec;

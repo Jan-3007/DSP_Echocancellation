@@ -6,6 +6,10 @@
 
 int main()
 {
+    // workaround for the startup script not supporting C++
+    CodecWM8731::create_instance();
+    I2S_DSTC::create_instance();
+
     // GPIO port configuration for 3 color LED, user button and test pin
 	GpioInit();
 
@@ -18,6 +22,7 @@ int main()
     aec.run();
 
 
+    
     return 0;
 }
 

@@ -29,7 +29,7 @@ constexpr uint32_t c_num_blocks = 3;
 //
 //------------------------------
 
-constexpr uint32_t c_num_taps = 512;
+constexpr uint32_t c_num_taps = 1024;
 // 0 <= mu <= 2
 constexpr float32_t c_mu = 1;
 

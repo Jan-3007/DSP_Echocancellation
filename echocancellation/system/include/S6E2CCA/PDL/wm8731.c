@@ -271,7 +271,7 @@ en_result_t Wm8731_Init(volatile stc_mfsn_i2c_t* pstcI2c,
     pstcI2cInstance = pstcI2c;
     
     stcI2cConfig.enMsMode = I2cMaster;
-    stcI2cConfig.u32BaudRate = 400000u;
+    stcI2cConfig.u32BaudRate = 100000u;
     stcI2cConfig.bWaitSelection = FALSE;
     stcI2cConfig.bDmaEnable = FALSE;
     stcI2cConfig.pstcFifoConfig = NULL;

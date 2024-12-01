@@ -13,7 +13,7 @@
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 /*ENTRY(main)*/
 SEARCH_DIR(.)
-GROUP(libgcc.a libc.a libsupc++.a libnosys.a libm.a)
+GROUP(crt0.o crti.o crtn.o crtbegin.o crtend.o libgcc.a libc.a libsupc++.a libnosys.a libm.a)
 MEMORY
 {
    ROM   (rx)   : ORIGIN = 0x00000000, LENGTH = 2048K
@@ -66,6 +66,25 @@ SECTIONS
     *(.eh_frame_hdr)
     *(.eh_frame)
 
+/* required for C++ */
+    KEEP(*(.init))
+    KEEP(*(.fini))
+
+    /* .ctors */
+    *crtbegin.o(.ctors)
+    *crtbegin?.o(.ctors)
+    *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+    *(SORT(.ctors.*))
+    *(.ctors)
+
+    /* .dtors */
+    *crtbegin.o(.dtors)
+    *crtbegin?.o(.dtors)
+    *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+    *(SORT(.dtors.*))
+    *(.dtors)
+/* end C++ */
+
     . = ALIGN(4);
     __FM_regions = .;
     LONG (0)
@@ -106,6 +125,10 @@ SECTIONS
   data_size = _edata - _sdata;
   .bss :
   {
+    /* dummy symbols to suppress bss zeroing in _start */
+    __bss_start__ = .;
+    __bss_end__ = .;
+
     _sbss = .;
     *(.shbss)
     *(.bss .bss.* .gnu.linkonce.b.*)

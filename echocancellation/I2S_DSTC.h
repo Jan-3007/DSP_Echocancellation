@@ -23,8 +23,15 @@ public:
     // ctor
     I2S_DSTC();
 
+    static
+    void
+    create_instance();
+
     void
     init();
+
+    void 
+    start();
 
     bool
     write_tx_block(const uint32_t input[]);
@@ -71,6 +78,6 @@ protected:
 
 
 
-extern I2S_DSTC g_i2s_dstc;
+extern I2S_DSTC* g_i2s_dstc;
 
 

@@ -301,7 +301,8 @@ start_main:
 
 	LDR     R0, =SystemInit
     BLX     R0
-    LDR     R0,=main
+// changed to call C++ runtime -> _start else main
+    LDR     R0, =main
     BX      R0
 
     .pool
