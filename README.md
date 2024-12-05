@@ -28,15 +28,16 @@ Bearbeiter: Jan, Rouven
     - DAC in Betrieb nehmen
     - circular buffer implementieren
     - CFAR implementieren
-    - LMS Filter implementieren (v1 fertig)
+    - LMS Filter implementieren
 
 
 
 ### Präsentation
 
 1. Vortrag
-    - kurze Übersicht zu den einzelnen Arbeitsschritten
+    - Wo wird AEC im Alltag gebraucht
+    - kurze ERklärung zur Funktionsweise (siehe Vorlesung und Signalflussbild) des LMS Filters
+    - Gesamtübersicht der Komponenten und kurze Erläuterungen zu den einzelnen Komponenten (z.B. Circular Buffer)
+    - Darstellung des im Versuch nachgebildeten Szenarios
 2. Vorführung des Programms auf dem Board
-    - benötigt: Kabel, Lautsprecher, Mikrofon(?)
-    - Audio mit Echo wird beispielsweise von dem Pythonprogramm in Echtzeit erzeugt
 
