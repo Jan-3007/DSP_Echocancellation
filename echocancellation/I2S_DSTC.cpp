@@ -25,7 +25,7 @@ I2S_DSTC::init()
     I2S0Init(c_samp_freq, dma, nullptr);
 
     // initial condition for tx buffer
-    for(uint32_t i = c_num_blocks; i > 0; i--)
+    for(uint32_t i = c_fifo_size_blocks; i > 0; i--)
     {
         tx_buffer_.fill_block(0);
     }

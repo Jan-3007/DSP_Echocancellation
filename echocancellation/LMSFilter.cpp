@@ -4,7 +4,6 @@
 // ctor
 LMSFilter::LMSFilter()
 {
-    init();
 }
 
 
@@ -32,7 +31,6 @@ LMSFilter::process(
     float32_t* data_ptr = data_;
     float32_t* new_data = &data_[c_num_taps - 1];
 
-    // TODO: add sizes of arrays to params and compare them against config values?
 
     // process data and append samples from source to data    
     for(uint32_t sample_cnt = c_block_size; sample_cnt > 0; sample_cnt--)
@@ -72,7 +70,16 @@ LMSFilter::process(
         // apply weight to coefficients
         for(uint32_t tap_cnt = c_num_taps; tap_cnt > 0; tap_cnt--)
         {
+#if 0
             (*coeff_ptr++) += (weight * (*current_data++));          
+#else
+            (*coeff_ptr) += (weight * (*current_data++));
+            if(isnan(*coeff_ptr))
+            {
+                fatal_error();
+            }
+            coeff_ptr++;
+#endif
         }
     }
 

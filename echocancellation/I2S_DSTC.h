@@ -6,11 +6,11 @@ class I2S_DSTC
 {
 protected:
     // TX buffer
-    uint32_t tx_buffer_space_[c_block_size * c_num_blocks];
+    uint32_t tx_buffer_space_[c_block_size * c_fifo_size_blocks];
     CircularBuffer<uint32_t> tx_buffer_{c_block_size, tx_buffer_space_};
 
     // RX buffer
-    uint32_t rx_buffer_space_[c_block_size * c_num_blocks];
+    uint32_t rx_buffer_space_[c_block_size * c_fifo_size_blocks];
     CircularBuffer<uint32_t> rx_buffer_{c_block_size, rx_buffer_space_};
 
     // DSTC descriptors

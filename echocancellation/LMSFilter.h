@@ -2,9 +2,8 @@
 
 
 #ifndef LMS_FILTER_WITH_OUTPUT
-#define LMS_FILTER_WITH_OUTPUT 0
+#define LMS_FILTER_WITH_OUTPUT 1
 #endif
-
 
 
 class LMSFilter

@@ -2,14 +2,26 @@
 #include "AEC.h"
 
 
+AEC* g_aec;
 
 
-void
-AEC::init()
+AEC::AEC()
 {
+}
+
+
+void AEC::init()
+{
+    lms_.init();
+
     g_codec->init();
 
     g_i2s_dstc->init();
+
+    for(uint32_t i = c_delay_blocks; i > 0; i--)
+    {
+        delay_buffer_.fill_block(0);
+    }
 }
 
 
@@ -44,7 +56,7 @@ AEC::run()
             mic_passthrough();
         }
 #endif
-
+#if 1
         if(0 == --btn_cnt)
         {
             btn_cnt = button_divider;
@@ -56,7 +68,16 @@ AEC::run()
             monitor_cnt = monitor_divider;
             check_errors();
         }
+#endif
     }
+}
+
+
+void 
+AEC::create_instance()
+{
+    static AEC aec_instance;
+    g_aec = &aec_instance;
 }
 
 
@@ -129,16 +150,44 @@ AEC::process_aec()
     
     convert_input();
 
+    delay_buffer_.read_block(right_input_block_delayed_);
+    delay_buffer_.write_block(right_input_block_);
+
     // process input
     lms_.process(
-        right_input_block_,                     // original signal
-        left_input_block_,                      // microphone
-        float_output_block_                     // output
+        right_input_block_delayed_,             // source = reference signal
+        left_input_block_,                      // reference  = microphone
+        right_output_block_,                    // output = FIR out
+        left_output_block_                      // error = output
         );
 
     convert_output();
+//    convert_output_LR();
 
     // write output
+    g_i2s_dstc->write_tx_block(output_block_);
+}
+
+
+void 
+AEC::mic_passthrough()
+{
+    if(g_i2s_dstc->read_rx_block(input_block_) == false)
+    {
+        return;
+    }
+    
+    convert_input();
+
+    // output = input L
+    for(uint32_t i = 0; i < c_block_size; i++)
+    {
+//        left_output_block_[i] = right_input_block_[i];
+        left_output_block_[i] = left_input_block_[i];
+    }
+
+    convert_output();
+
     g_i2s_dstc->write_tx_block(output_block_);
 }
 
@@ -160,28 +209,6 @@ AEC::loopback()
     {
         *output++ = *input++;
     }
-
-    g_i2s_dstc->write_tx_block(output_block_);
-}
-
-
-void 
-AEC::mic_passthrough()
-{
-    if(g_i2s_dstc->read_rx_block(input_block_) == false)
-    {
-        return;
-    }
-    
-    convert_input();
-
-    // output = input L
-    for(uint32_t i = 0; i < c_block_size; i++)
-    {
-        float_output_block_[i] = left_input_block_[i];
-    }
-
-    convert_output();
 
     g_i2s_dstc->write_tx_block(output_block_);
 }
@@ -216,7 +243,8 @@ AEC::convert_output()
     uint32_t* output = output_block_;
     for(uint32_t i = 0; i < c_block_size; i++)
     {
-        float32_t smp_f = float_output_block_[i];
+//        float32_t smp_f = right_output_block_[i];
+        float32_t smp_f = left_output_block_[i];
 
         int16_t smp_i = static_cast<int16_t>( __SSAT( static_cast<int32_t>(smp_f * 32768.0f), 16) );
 
@@ -224,6 +252,29 @@ AEC::convert_output()
 
         // duplicate signal on right and left channels
         uint32_t tmp = (smp_u << 16) | smp_u;
+        *output++ = tmp;
+    }
+}
+
+
+void 
+AEC::convert_output_LR()
+{
+    // convert to int and combine channels
+    uint32_t* output = output_block_;
+    for(uint32_t i = 0; i < c_block_size; i++)
+    {
+        float32_t smp_l = left_output_block_[i];
+        float32_t smp_r = right_output_block_[i];
+
+        int16_t smp_l_i = static_cast<int16_t>( __SSAT( static_cast<int32_t>(smp_l * 32768.0f), 16) );
+        int16_t smp_r_i = static_cast<int16_t>( __SSAT( static_cast<int32_t>(smp_r * 32768.0f), 16) );
+
+        uint32_t smp_l_u = static_cast<uint16_t>(smp_l_i);
+        uint32_t smp_r_u = static_cast<uint16_t>(smp_r_i);
+
+        // duplicate signal on right and left channels
+        uint32_t tmp = (smp_l_u << 16) | smp_r_u;
         *output++ = tmp;
     }
 }
