@@ -1,8 +1,12 @@
 #pragma once
 
 
+#ifndef LMS_FILTER_LOOP_UNROLLING
+#define LMS_FILTER_LOOP_UNROLLING 1
+#endif
+
 #ifndef LMS_FILTER_WITH_OUTPUT
-#define LMS_FILTER_WITH_OUTPUT 1
+#define LMS_FILTER_WITH_OUTPUT 0
 #endif
 
 

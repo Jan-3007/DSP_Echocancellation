@@ -29,7 +29,7 @@
 
 //	.equ Debug_RAM, 1
 
-	.equ    Stack_Size, 0x00000400
+	.equ    Stack_Size, 0x00000C00
     .section ".stack", "w"
     .align  3
     .globl  __FM_stack_mem

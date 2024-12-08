@@ -80,6 +80,18 @@ public:
             return tmp;
         }
 
+    uint32_t
+    get_overrun_error()
+        {
+            return overrun_error_;
+        }
+
+    uint32_t
+    get_underrun_error()
+        {
+            return underrun_error_;
+        }
+
 
     // returns false if buffer is full
     bool

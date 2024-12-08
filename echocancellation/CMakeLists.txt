@@ -62,6 +62,18 @@ add_custom_command(TARGET ${target_name} POST_BUILD
     VERBATIM
     )
 
+# create .symbols file (post build)
+add_custom_command(TARGET ${target_name} POST_BUILD
+    COMMAND ${CMAKE_NM} --numeric-sort --line-numbers --demangle --print-size "${PROJECT_NAME}.axf" ">" "${PROJECT_NAME}.symbols"
+    VERBATIM
+    )
+
+# create .disasm file (post build)
+add_custom_command(TARGET ${target_name} POST_BUILD
+    COMMAND ${CMAKE_OBJDUMP} --disassemble --demangle "${PROJECT_NAME}.axf" ">" "${PROJECT_NAME}.disasm"
+    VERBATIM
+    )
+
 
 # add libs to link with
 #target_link_libraries(${target_name} 

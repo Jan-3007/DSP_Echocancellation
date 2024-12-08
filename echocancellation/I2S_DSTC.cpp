@@ -266,6 +266,11 @@ I2S_DSTC::read_rx_block(uint32_t output[])
     // lock out ISR
     NVIC_DisableIRQ(DSTC_HW_IRQn);
 
+    if(rx_buffer_.capture_overrun_error())
+    {
+        fatal_error();
+    }
+
     bool succ = rx_buffer_.read_block(output);
 
     // unlock ISR
@@ -273,6 +278,104 @@ I2S_DSTC::read_rx_block(uint32_t output[])
 
     return succ;
 }
+
+
+bool 
+I2S_DSTC::read_rx_block_float(
+    float32_t l_channel[c_block_size], 
+    float32_t r_channel[c_block_size]
+    )
+{
+    // lock out ISR
+    NVIC_DisableIRQ(DSTC_HW_IRQn);
+
+    if(rx_buffer_.get_overrun_error())
+    {
+        fatal_error();
+    }
+
+    uint32_t* ptr = rx_buffer_.get_read_block_ptr();
+
+    if(ptr == nullptr)
+    {
+        // nothing to read
+
+        // unlock ISR
+        NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+        return false;
+    }
+    
+    // convert to float
+    convert_2ch_to_float(ptr, l_channel, r_channel);
+
+    rx_buffer_.incr_read_block_ptr();
+
+    // unlock ISR
+    NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+    return true;
+}
+
+
+bool 
+I2S_DSTC::write_tx_block_float(
+    const float32_t l_channel[c_block_size], 
+    const float32_t r_channel[c_block_size]
+    )
+{
+    // lock out ISR
+    NVIC_DisableIRQ(DSTC_HW_IRQn);
+
+    uint32_t* ptr = tx_buffer_.get_write_block_ptr();
+
+    if(ptr == nullptr)
+    {
+        // unlock ISR
+        NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+        return false;
+    }
+
+    convert_float_to_2ch(l_channel, r_channel, ptr);
+
+    tx_buffer_.incr_write_block_ptr();
+
+    // unlock ISR
+    NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+    return true;
+}
+
+
+bool 
+I2S_DSTC::write_tx_block_float(
+    const float32_t channel[c_block_size]
+    )
+{
+    // lock out ISR
+    NVIC_DisableIRQ(DSTC_HW_IRQn);
+
+    uint32_t* ptr = tx_buffer_.get_write_block_ptr();
+
+    if(ptr == nullptr)
+    {
+        // unlock ISR
+        NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+        return false;
+    }
+
+    convert_float_to_2ch_duplicated(channel, ptr);
+
+    tx_buffer_.incr_write_block_ptr();
+
+    // unlock ISR
+    NVIC_EnableIRQ(DSTC_HW_IRQn);
+
+    return true;
+}
+
 
 void 
 I2S_DSTC::capture_errors(Errors& errors)
@@ -288,4 +391,5 @@ I2S_DSTC::capture_errors(Errors& errors)
     // unlock ISR
     NVIC_EnableIRQ(DSTC_HW_IRQn);
 }
+
 

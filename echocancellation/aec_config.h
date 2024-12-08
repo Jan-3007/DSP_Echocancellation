@@ -8,18 +8,17 @@
 //
 //------------------------------
 
+constexpr uint32_t c_sampling_freq_Hz = 48000;
+
 // number of samples per block
+// must be power of 2
 // @48kHz   -> 48 samples/block = 1 ms sampling time
-//          -> 96 samples/block = 2 ms sampling time
-//          -> 140 samples/block = 5 ms sampling time
-constexpr uint32_t c_block_size = 48;
+constexpr uint32_t c_block_size = 64;
 
 // number of blocks to delay reference signal
-// current hardware setup requires a delay of about 80 ms
-// @1 ms sampling time -> delay blocks = 80
-// @2 ms sampling time -> delay blocks = 40
-// @5 ms sampling time -> delay blocks = 16
-constexpr uint32_t c_delay_blocks = 90;
+// this compensates the significant delay caused by the USB microphone
+// current hardware setup requires a delay of about 93 ms
+constexpr uint32_t c_delay_blocks = ((93*c_sampling_freq_Hz)/1000)/c_block_size;
 
 
 
@@ -55,10 +54,11 @@ constexpr uint32_t c_fifo_size_blocks = 3;
 //
 //------------------------------
 
-constexpr uint32_t c_num_taps = 4096*4;
+// must be multiple of 16
+constexpr uint32_t c_num_taps = 256;
 
 // 0 <= mu <= 2
-constexpr float32_t c_mu = 0.02;
+constexpr float32_t c_mu = 0.17;
 
 
 

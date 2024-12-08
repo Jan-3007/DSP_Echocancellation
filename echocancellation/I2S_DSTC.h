@@ -39,6 +39,23 @@ public:
     bool
     read_rx_block(uint32_t output[]);
 
+    bool 
+    read_rx_block_float(
+        float32_t l_channel[c_block_size], 
+        float32_t r_channel[c_block_size]
+        );
+
+    bool 
+    write_tx_block_float(
+        const float32_t l_channel[c_block_size], 
+        const float32_t r_channel[c_block_size]
+        );
+
+    // send channel data to L+R
+    bool 
+    write_tx_block_float(
+        const float32_t channel[c_block_size]
+        );
 
     struct Errors
     {
