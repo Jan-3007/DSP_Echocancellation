@@ -36,8 +36,8 @@ Bearbeiter: Jan, Rouven
 
 1. Vortrag
     - Wo wird AEC im Alltag gebraucht
-    - kurze ERklärung zur Funktionsweise (siehe Vorlesung und Signalflussbild) des LMS Filters
+    - kurze Erklärung zur Funktionsweise (siehe Vorlesung und Signalflussbild) des LMS Filters
     - Gesamtübersicht der Komponenten und kurze Erläuterungen zu den einzelnen Komponenten (z.B. Circular Buffer)
-    - Darstellung des im Versuch nachgebildeten Szenarios
+    - Darstellung des im Versuch nachgebildeten Szenarios mit Grafiken und Diagrammen
 2. Vorführung des Programms auf dem Board
 
