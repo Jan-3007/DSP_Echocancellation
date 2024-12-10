@@ -8,3 +8,7 @@
 build/
 
 
+# 
+tests/
+tests2/
+tests3/

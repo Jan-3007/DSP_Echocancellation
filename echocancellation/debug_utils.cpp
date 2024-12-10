@@ -2,6 +2,26 @@
 #include <cstdarg>
 
 
+
+
+void
+fatal_error()
+{
+    // LED_G off
+    gpio_set(LED_G, HIGH);
+    // LED_B off
+    gpio_set(LED_B, HIGH);
+    // LED_R on
+	gpio_set(LED_R, LOW);	
+
+    IF_DEBUG(debug_printf("FATAL ERROR"));
+
+    while(true);
+}
+
+
+
+
 // write_uart0: transmits a string to UART0 transmit buffer
 void write_uart0(const char* message)
 {

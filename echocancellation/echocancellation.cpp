@@ -1,51 +1,41 @@
 #include "global.h"
 
-#define BLOCK_SIZE            32
-#define NUM_TAPS_ARRAY_SIZE              32
-#define NUM_TAPS 5
-
-const float32_t firCoeffs32[NUM_TAPS_ARRAY_SIZE] = {
-  -0.0018225230f, -0.0015879294f, +0.0000000000f, +0.0036977508f, +0.0080754303f, +0.0085302217f, -0.0000000000f, -0.0173976984f,
-  -0.0341458607f, -0.0333591565f, +0.0000000000f, +0.0676308395f, +0.1522061835f, +0.2229246956f, +0.2504960933f, +0.2229246956f,
-  +0.1522061835f, +0.0676308395f, +0.0000000000f, -0.0333591565f, -0.0341458607f, -0.0173976984f, -0.0000000000f, +0.0085302217f,
-  +0.0080754303f, +0.0036977508f, +0.0000000000f, -0.0015879294f, -0.0018225230f, 0.0f,0.0f,0.0f
-};
-
-static float32_t firStateF32[2 * BLOCK_SIZE + NUM_TAPS - 1];
-
-void test_dsp_lib()
-{
-    arm_fir_instance_f32 fir_filter;
-    arm_fir_init_f32(&fir_filter, NUM_TAPS, (float32_t *)&firCoeffs32[0], &firStateF32[0], BLOCK_SIZE);
-}
-
 
 
 
 
 int main()
 {
+    // workaround for the startup script not supporting C++
+    CodecWM8731::create_instance();
+    I2S_DSTC::create_instance();
+    AEC::create_instance();
+
     // GPIO port configuration for 3 color LED, user button and test pin
 	GpioInit();
 
     IF_DEBUG(Uart0Init(115200));
+    
+    SystemCoreClockUpdate();
+    IF_DEBUG(debug_printf("SystemCoreClock: %u Hz\n", SystemCoreClock));
+    
+    uint32_t msp = __get_MSP();
+    IF_DEBUG(debug_printf("MSP: 0x%08x\n", msp));
 
-    IF_DEBUG(debug_printf("Hello World!\n"));
 
-    test_dsp_lib();
+    IF_DEBUG(debug_printf("AEC: %s, %s\n", __DATE__, __TIME__));
+    IF_DEBUG(debug_printf("Parameters:\n"));
+    IF_DEBUG(debug_printf("  Block size: %u samples\n", c_block_size));
+    IF_DEBUG(debug_printf("  Ref. delay: %u blocks, %u ms\n", c_delay_blocks, ((c_delay_blocks * c_block_size * 1000) / c_sampling_freq_Hz)));
+    IF_DEBUG(debug_printf("  FIR taps: %u\n", c_num_taps));
+    IF_DEBUG(debug_printf("  LMS mu: %.4f\n", c_mu));
 
-    int i = 0;
-    while(true)
-    {
-        gpio_set(LED_B, LOW);			// LED_B on
-        delay_ms(500);
-        gpio_set(LED_B, HIGH);			// LED_B off
-        delay_ms(500);
 
-        IF_DEBUG(debug_printf("i = %d\n", i));
-        i++;
-    }
+    g_aec->init();
+    g_aec->run();
 
+
+    
     return 0;
 }
 

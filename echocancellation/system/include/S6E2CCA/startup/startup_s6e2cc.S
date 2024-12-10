@@ -29,7 +29,7 @@
 
 //	.equ Debug_RAM, 1
 
-	.equ    Stack_Size, 0x00000400
+	.equ    Stack_Size, 0x00000C00
     .section ".stack", "w"
     .align  3
     .globl  __FM_stack_mem
@@ -301,7 +301,8 @@ start_main:
 
 	LDR     R0, =SystemInit
     BLX     R0
-    LDR     R0,=main
+// changed to call C++ runtime -> _start else main
+    LDR     R0, =main
     BX      R0
 
     .pool
