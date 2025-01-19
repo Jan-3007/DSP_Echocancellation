@@ -12,3 +12,6 @@ build/
 tests/
 tests2/
 tests3/
+*.pdf
+*.docx
+*.pptx
