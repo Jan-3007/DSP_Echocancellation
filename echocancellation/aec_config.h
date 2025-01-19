@@ -13,7 +13,7 @@ constexpr uint32_t c_sampling_freq_Hz = 48000;
 // number of samples per block
 // must be power of 2
 // @48kHz   -> 48 samples/block = 1 ms sampling time
-constexpr uint32_t c_block_size = 64;
+constexpr uint32_t c_block_size = 128;
 
 // number of blocks to delay reference signal
 // this compensates the significant delay caused by the USB microphone
