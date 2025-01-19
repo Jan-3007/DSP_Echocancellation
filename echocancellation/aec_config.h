@@ -58,7 +58,7 @@ constexpr uint32_t c_fifo_size_blocks = 3;
 constexpr uint32_t c_num_taps = 256;
 
 // 0 <= mu <= 2
-constexpr float32_t c_mu = 0.17;
+constexpr float32_t c_mu = 0.1;
 
 
 
