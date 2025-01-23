@@ -163,6 +163,8 @@ AEC::process_aec()
         left_output_block_
 #if LMS_FILTER_WITH_OUTPUT
         , right_output_block_
+#else
+        , r_ptr_delayed
 #endif
         );
 

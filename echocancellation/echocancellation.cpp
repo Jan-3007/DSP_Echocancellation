@@ -13,6 +13,7 @@ int main()
 
     // GPIO port configuration for 3 color LED, user button and test pin
 	GpioInit();
+    gpio_set(TEST_PIN, LOW);
 
     IF_DEBUG(Uart0Init(115200));
     
@@ -25,6 +26,7 @@ int main()
 
     IF_DEBUG(debug_printf("AEC: %s, %s\n", __DATE__, __TIME__));
     IF_DEBUG(debug_printf("Parameters:\n"));
+    IF_DEBUG(debug_printf("  Sampling frequency: %u kHz\n", (c_sampling_freq_Hz/1000)));
     IF_DEBUG(debug_printf("  Block size: %u samples\n", c_block_size));
     IF_DEBUG(debug_printf("  Ref. delay: %u blocks, %u ms\n", c_delay_blocks, ((c_delay_blocks * c_block_size * 1000) / c_sampling_freq_Hz)));
     IF_DEBUG(debug_printf("  FIR taps: %u\n", c_num_taps));
