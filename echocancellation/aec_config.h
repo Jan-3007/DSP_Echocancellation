@@ -8,7 +8,7 @@
 //
 //------------------------------
 
-constexpr uint32_t c_sampling_freq_Hz = 48000;
+constexpr uint32_t c_sampling_freq_Hz = 8000;
 
 // number of samples per block
 // must be power of 2
@@ -29,7 +29,8 @@ constexpr uint32_t c_delay_blocks = ((93*c_sampling_freq_Hz)/1000)/c_block_size;
 //------------------------------
 
 // sampling frequency
-constexpr sampling_rate c_samp_freq = hz48000;
+// 96 kHz, 48 kHz, 32 kHz, 8 kHz
+constexpr sampling_rate c_samp_freq = hz8000;
 
 // DAC input: line_in, mic_in
 // line_in -> 2 channels
@@ -55,7 +56,7 @@ constexpr uint32_t c_fifo_size_blocks = 3;
 //------------------------------
 
 // must be multiple of 16
-constexpr uint32_t c_num_taps = 256;
+constexpr uint32_t c_num_taps = 1024;
 
 // 0 <= mu <= 2
 constexpr float32_t c_mu = 0.1;

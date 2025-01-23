@@ -15,3 +15,4 @@ tests3/
 *.pdf
 *.docx
 *.pptx
+out/
