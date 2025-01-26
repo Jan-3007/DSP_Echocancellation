@@ -18,4 +18,5 @@ tests5/
 *.docx
 *.pptx
 out/
+ARM/
 
