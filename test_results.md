@@ -4,14 +4,16 @@
 Audiodatei: "Hallo Welt mit Sinus"
 
 Frei gewählte Startparameter:
-    - Abtastfrequenz fs = 48 kHz (höchste sinnvolle verfügbare fs, 96 kHz ist definitv zu schnell)
-    - block size = 64 samples (eine übliche block size)
-    - Filterlänge = 1024 (Empfohlene Minimallänge)
-    - mu = 0,1 (nach Zwischentests frei festgelegt)
+- Abtastfrequenz fs = 48 kHz (höchste sinnvolle verfügbare fs, 96 kHz ist definitv zu schnell)
+- block size = 64 samples (eine übliche block size)
+- Filterlänge = 1024 (Empfohlene Minimallänge)
+- mu = 0,1 (nach Zwischentests frei festgelegt)
 
 
 gemessene Verzögerung durch das Mikrofon: 94 ms
-maximal kompensierbare Verzögerung durch den Filter: $$\frac{taps}{f_{s}} = delay$$
+
+maximal kompensierbare Verzögerung durch den Filter: 
+$$\frac{taps}{f_{s}} = delay$$
 $$\frac{256}{48\ kHz} = 5,34\ ms$$
 $$\frac{512}{48\ kHz} = 10,67\ ms$$
 $$\frac{1024}{48\ kHz} = 21,34\ ms$$
