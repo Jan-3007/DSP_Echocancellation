@@ -36,8 +36,8 @@ list(APPEND include_directories "${CMAKE_CURRENT_LIST_DIR}/system/include/S6E2CC
 
 
 # build CMSIS-DSP library
-add_subdirectory("${CMSISDSP}/Source" lib_dsp)
-target_compile_definitions(CMSISDSP PRIVATE ${compile_definitions} )
+#add_subdirectory("${CMSISDSP}/Source" lib_dsp)
+#target_compile_definitions(CMSISDSP PRIVATE ${compile_definitions} )
 
 
 #
@@ -62,11 +62,23 @@ add_custom_command(TARGET ${target_name} POST_BUILD
     VERBATIM
     )
 
+# create .symbols file (post build)
+add_custom_command(TARGET ${target_name} POST_BUILD
+    COMMAND ${CMAKE_NM} --numeric-sort --line-numbers --demangle --print-size "${PROJECT_NAME}.axf" ">" "${PROJECT_NAME}.symbols"
+    VERBATIM
+    )
+
+# create .disasm file (post build)
+add_custom_command(TARGET ${target_name} POST_BUILD
+    COMMAND ${CMAKE_OBJDUMP} --disassemble --demangle "${PROJECT_NAME}.axf" ">" "${PROJECT_NAME}.disasm"
+    VERBATIM
+    )
+
 
 # add libs to link with
-target_link_libraries(${target_name} 
-    CMSISDSP
-    )
+#target_link_libraries(${target_name} 
+#    CMSISDSP
+#    )
 
     
 # add startup code to the project
@@ -79,6 +91,11 @@ target_sources(${target_name} PRIVATE
     system/include/S6E2CCA/PDL/pdl.c
     system/include/S6E2CCA/PDL/system_s6e2cc.c
     system/include/S6E2CCA/PDL/mfs.c
+    system/include/S6E2CCA/PDL/wm8731.c
+    system/include/S6E2CCA/PDL/dstc.c
+    system/include/S6E2CCA/PDL/i2s.c
+    system/include/S6E2CCA/PDL/clk.c
+    system/include/S6E2CCA/PDL/interrupts_fm4_type_b.c
     system/include/platform/utils.c
     system/include/platform/platform.c
     )
@@ -88,6 +105,10 @@ target_sources(${target_name} PRIVATE
     crt_dummy_syscalls.c
     echocancellation.cpp
     debug_utils.cpp
+    CodecWM8731.cpp
+    LMSFilter.cpp
+    I2S_DSTC.cpp
+    AEC.cpp
     )
 
 
