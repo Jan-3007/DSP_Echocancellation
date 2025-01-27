@@ -1,0 +1,10 @@
+https://en.wikipedia.org/wiki/Echo_suppression_and_cancellation#Quantifying_echo
+
+https://dsp.stackexchange.com/questions/338/what-methods-can-be-used-to-identify-and-remove-echo-from-an-audio-system
+
+https://arm-software.github.io/CMSIS_5/DSP/html/group__LMS.html
+
+https://eclipseaudio.com/fir-filter-guide/
+
+
+
